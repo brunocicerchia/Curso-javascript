@@ -1,0 +1,170 @@
+body {
+  overflow-x: hidden;
+}
+
+.background {
+	background: rgb(90,65,183);
+	background: linear-gradient(90deg, rgba(90,65,183,1) 0%, rgba(109,85,200,1) 35%, rgba(128,103,220,1) 100%);
+	height: 100vh;
+	position: relative;  
+}
+
+.titleMargin {
+	margin-top: 15vh;
+}
+
+#productosContainer {
+	display: none;
+}
+
+.buttonGreen {
+	border-color: #96C38F;
+	color: #96C38F;
+}
+
+.buttonGreen:hover {
+	background-color: #96C38F;
+	color: #fff;
+	border-color: #fff;
+}
+
+.buttonGreenSolid {
+	background-color: #96C38F;
+	color: #fff;
+}
+
+.buttonGreenSolid:hover {
+	background-color: #67af5c;
+  color: #fff;
+}
+
+.itemCart {
+  color: #fff;
+  background-color: #7B63D7;
+  margin-left: 50px;
+  margin-right: 50px; 
+  border-radius: 2px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fadeIn {
+  -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: fadein 2s; /* Firefox < 16 */
+  -ms-animation: fadein 2s; /* Internet Explorer */
+  -o-animation: fadein 2s; /* Opera < 12.1 */
+  animation: fadein 2s;
+}
+
+@media (max-width: 768px) {
+	.titleMargin {
+		margin-top: 5vh !important;
+	}
+}
+
+//Fuentes
+@font-face {
+    font-family: 'Airbnb Cereal App Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Airbnb Cereal App Bold'), url('AirbnbCerealBold.woff') format('woff');
+}
+
+.tituloHeader {
+	font-family: 'Airbnb Cereal App Bold';
+}
+
+.subtitulo {
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+// arrows
+$total-arrows: 3;
+$arrow-line-length: 50px;
+$arrow-line-width: 4px;
+
+// arrow animtion + choose direction
+@mixin arrow-transitions($rot: 0deg) {
+  transform: translate(-50%, -50%) rotateZ($rot);
+}
+
+.arrow-container {
+  display: block;
+  width: 100px;
+  height: 100px;  
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  @include arrow-transitions(0deg);
+  &:hover {
+    cursor: pointer;
+    .arrow {
+      top: 50%;
+      &:before {
+        @include arrow-transitions(-30deg);
+      }
+      &:after {
+        @include arrow-transitions(30deg);
+      }      
+    }
+  }
+}
+.arrow {
+  position: absolute;
+  left: 50%;
+  transition: all .4s ease;
+  &:before,
+  &:after {
+    transition: all .4s ease;
+    content: '';
+    display: block;
+    position: absolute;
+    transform-origin: bottom right;
+    background: #96C38F;
+    width: $arrow-line-width;
+    height: $arrow-line-length;
+    border-radius: 10px;
+    transform: translate(-50%, -50%) rotateZ(-45deg);
+  }
+  &:after {
+    transform-origin: bottom left;
+    transform: translate(-50%, -50%) rotateZ(45deg);
+  }
+  @for $i from 1 through $total-arrows {
+    &:nth-child(#{$i}) {
+      opacity: 0.3 * $i;
+      top: 15 + (100% * $i/5);
+    }
+  }
+}
+
+//Animaciones Fadein
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
