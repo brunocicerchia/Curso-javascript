@@ -1,8 +1,8 @@
 let modalTitle = document.querySelector("#ModalLabel");
 let modalBody = document.querySelector("#detallesModal");
-let compuProcesador = {}
-let compuMother = {}
-let compuRam = {}
+let compuProcesador;
+let compuMother;
+let compuRam;
 let precioFinal;
 
 //Componentes
@@ -58,8 +58,8 @@ function consultaPc() {
         modalTitle.innerHTML = `<h4 class="tituloHeader">Se encontro una compu ya terminada!</h4>`;
         modalBody.innerHTML = `
         <p class="subtitulo">Te gustaria continuar donde lo dejaste?</p>
-        <button class="btn btn btn-success me-3" onClick="restoreStorage()" data-bs-dismiss="modal">Continuar</button>
-        <button class="btn btn-danger" onClick="procesador()" data-bs-dismiss="modal">Empezar de 0</button>
+        <button id="restoreButton" class="btn btn btn-success me-3">Continuar</button>
+        <button id="deleteButton" class="btn btn-danger">Empezar de 0</button>
         `;
         $('#Modal').modal('show');
     } else {
@@ -67,11 +67,12 @@ function consultaPc() {
     } 
 }
 
-
 //Mostrar Procesadores
 function procesador() {
-    $("body").css("overflow-y", "scroll");
+    $('#Modal').modal('hide');
+    $("#botonBody").hide();
     localStorage.clear();
+    $("body").css("overflow-y", "scroll");
     window.location.hash = "#productosContainer";
     $("#botonBody").hide();
     $(".computadoras").html("");
@@ -96,7 +97,7 @@ function procesador() {
 }
 
 //Mostrar Mother
-function mother(element) {
+function mother(element) {    
     //Guardar Procesador en LocalStorage
     compuProcesador = procesadores[element.id];
     precioFinal = compuProcesador.precio;
@@ -127,7 +128,7 @@ function mother(element) {
             $(".computadoras").append(`        
             <div class="col-md-6" style="margin-top: 20px; margin-bottom: 20px;">
             <div class="card shadow" style="width: 18rem; background-color: #7B63D7; color: #fff;">
-            <a href="#productosContainer" id="${mother.id}" onClick="ramShow(this)"><img src="images/${mother.nombre}.jpg" class="card-img-top" alt="${mother.nombre}"></a>
+            <a href="#productosContainer" id="${mother.id}" onClick="ramShowAMD(this)"><img src="images/${mother.nombre}.jpg" class="card-img-top" alt="${mother.nombre}"></a>
             <div class="card-body" style="text-decoration: none !important;">
             <h5 class="card-title"><b>${mother.nombre}</b></h5>
             <p class="card-text">Precio: $${Intl.NumberFormat().format(mother.precio)}</p>
@@ -137,14 +138,14 @@ function mother(element) {
             `
             );
         }
-        compuMother = motherAMD[element.id];
+        
     } else {
         console.log("Mostrando solo mothers compatibles con " + compuProcesador.fabricante)
         for (const mother of motherIntel) {
             $(".computadoras").append(`
             <div class="col-md-6" style="margin-top: 20px; margin-bottom: 20px;">
             <div class="card shadow" style="width: 18rem; background-color: #7B63D7; color: #fff;">
-            <a href="#productosContainer" id="${mother.id}" onClick="ramShow(this)"><img src="images/${mother.nombre}.jpg" class="card-img-top" alt="${mother.nombre}"></a>
+            <a href="#productosContainer" id="${mother.id}" onClick="ramShowIntel(this)"><img src="images/${mother.nombre}.jpg" class="card-img-top" alt="${mother.nombre}"></a>
             <div class="card-body" style="text-decoration: none !important;">
             <h5 class="card-title"><b>${mother.nombre}</b></h5>
             <p class="card-text">Precio: $${Intl.NumberFormat().format(mother.precio)}</p>
@@ -152,14 +153,58 @@ function mother(element) {
             </div>
             </div>
             `);
-        }        
-        compuMother = motherIntel[element.id];
+        }
     }
 }
 
 //Mostrar ram
-function ramShow(element) {
+function ramShowAMD(element) {
+    compuMother = motherAMD[element.id];
+    console.log(element.id);
+    //Guardar Mother en LocalStorage
+    let compuMotherString = JSON.stringify(compuMother);
+    localStorage.setItem("mother", compuMotherString);
+    console.log("Mother Guardado");
+    precioFinal = compuMother.precio + precioFinal;
+
+    //Agregar mother al carrito
+    $(".carrito").append(`
+    <div class="row d-flex justify-content-evenly subtitulo itemCart mt-3">
+        <div class="col-md-4" style="padding:0;">
+            <img src="images/${compuMother.nombre}.jpg" class="img img-fluid itemCartImage" style="padding:5px;">
+        </div>
+        <div class="col-md-8">
+            <h3>${compuMother.nombre}</h3>
+            <p>$${Intl.NumberFormat().format(compuMother.precio)}</p>
+        </div>
+    </div>
+    `);
+    $("#precioFinal").html(`Total: <b>$${Intl.NumberFormat().format(precioFinal)}<b>`)
+
+    //Muestra Rams disponibles
+    $('.titulo').html("Elegi tu RAM!");
+    $(".computadoras").html("");
+    for (const ramItem of ram) {
+        $(".computadoras").append(`        
+        <div class="col-md-6" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="card shadow" style="width: 18rem; background-color: #7B63D7; color: #fff;">
+        <a href="#productosContainer" id="${ramItem.id}" onClick="pcTerminada(this)"><img src="images/${ramItem.nombre}.jpg" class="card-img-top" alt="${ramItem.nombre}"></a>
+        <div class="card-body" style="text-decoration: none !important;">
+        <h5 class="card-title"><b>${ramItem.nombre}</b></h5>
+        <p class="card-text">Precio: $${Intl.NumberFormat().format(ramItem.precio)}</p>
+        <button class="btn btn-light" id="${ramItem.id}" onclick="modalDescriptionR(this)" data-bs-toggle="modal" data-bs-target="#Modal">Ver detalles</button>
+        </div>
+        </div>
+        </div>
+        `);
+    }    
+}
+
+function ramShowIntel(element) {
+    compuMother = motherIntel[element.id];
+    console.log(element.id);
     //Guardar Mother en LocalStorage 
+    console.log(compuMother);
     let compuMotherString = JSON.stringify(compuMother);
     localStorage.setItem("mother", compuMotherString);
     console.log("Mother Guardado");
@@ -196,13 +241,12 @@ function ramShow(element) {
         </div>
         `);
     }
-    compuRam = ram[element.id]
 }
 
-
-
 //Almacenar pc termianda
-function pcTerminada() {
+function pcTerminada(element) {
+    compuRam = ram[element.id]        
+    console.log(element.id);
     //Guardar Ram en LocalStorage
     let compuRamString = JSON.stringify(compuRam);
     localStorage.setItem("ram", compuRamString);
@@ -227,7 +271,8 @@ function pcTerminada() {
     restoreStorage();
 }
 
-function restoreStorage() {  
+function restoreStorage() { 
+    $('#Modal').modal('hide');
     $("body").css("overflow-y", "scroll");  
     $("#botonBody").hide();
     $("#productosContainer").css("display", "block");
@@ -257,6 +302,25 @@ function restoreStorage() {
     $(".carritoPrecio").html(`<p id="precioFinal">Total: <b>$${Intl.NumberFormat().format(precioFinal2)}<b></p>`);
     window.location.hash = "#productosContainer";    
     }
+    $('.computadoras').append(`
+    <h3 class="text-center subtitulo">Ingresa a tu cuenta o registrate!</h3>
+    <form class="sesionForm">
+        <div class="mb-3">
+        <label for="InputEmail1" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp">
+        <div id="emailHelp" class="form-text">No compartiremos tu direccion con terceros</div>
+        </div>
+        <div class="mb-3">
+        <label for="InputPassword1" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="InputPassword1">
+        </div>
+        <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="Check1">
+        <label class="form-check-label" for="Check1">Mantener sesion abierta</label>
+        </div>
+        <button type="submit" class="btn btn-primary" onClick="alert()">Iniciar Sesion</button>
+    </form>
+    `);
 }
 
 function modalDescriptionP(e) {
@@ -310,3 +374,28 @@ $('a[href*="#"]')
       }
     }
   });
+
+let contador = 1;
+function alert() {
+    if(contador == 1) {
+        $('.computadoras').append(`
+        <div class="alert alert-warning mt-3" role="alert">
+            Funcion deshabilitada actualmente!
+        </div>
+        `);
+    }   
+    contador = 2; 
+}
+
+//click events
+$("#titleButton").click((e) => { 
+    procesador()
+});
+
+$("#botonBody").click((e) => { 
+    consultaPc()
+});
+
+$("body").on("click", "#deleteButton", procesador);
+
+$("body").on("click", "#restoreButton", restoreStorage);
